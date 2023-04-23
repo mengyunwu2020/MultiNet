@@ -7,17 +7,17 @@
 MultiNetpath(
   data,
   Kseq,
-  lambda.lasso,
-  lambda.similar,
+  lambda_vec,
+  gamma,
   initial.selection = "K-means",
-  initialize,
+  initialize = NULL,
   eps = 0.001,
   maxiter = 100,
   trace.inter,
-  tau.theta = 0.001,
   refit = TRUE,
   tunoption = "pathwise",
-  seed = 1
+  seed = 1,
+  numthreads = 1
 )
 }
 \arguments{
@@ -25,9 +25,9 @@ MultiNetpath(
 
 \item{Kseq}{Vector of number of clusters.}
 
-\item{lambda.lasso}{A vector of non-negative regularization parameters for the lasso. It should be decreasing from large to small.}
+\item{lambda_vec}{A vector of non-negative tuning parameters for the composite MCP. It should be decreasing from large to small.}
 
-\item{lambda.similar}{A vector of non-negative regularization parameters for the group lasso. It should be decreasing from large to small.}
+\item{gamma}{A vector of non-negative regularization parameters for the composite MCP. Default is 3.}
 
 \item{initial.selection}{The method of initialization. Can be "k-means". Otherwise, it must be initialized with the initialize parameter.}
 
@@ -39,13 +39,13 @@ MultiNetpath(
 
 \item{trace.inter}{Whether to track progress in the main function.}
 
-\item{tau.theta}{Threshold parameter for precision matrix.}
-
 \item{refit}{Whether to perform the refit process after the EM algorithm converges.}
 
 \item{tunoption}{One character. If tunoption=='pathwise', it means we used a path optimization scheme.}
 
 \item{seed}{The seed used in the initialization step.}
+
+\item{numthreads}{Number of threads to use.}
 }
 \value{
 A list "resultall" with each element including:
@@ -81,12 +81,11 @@ sigma03 <- solve(Theta03)
 Mu0.list <- list(mu01,mu02,mu03)
 Sigma0.list <- list(sigma01,sigma02,sigma03)
 Theta0.list <- list(Theta01,Theta02,Theta03)
-set.seed(1)
+set.seed(123)
 whole.data <- generate.data(N,Mu0.list,Theta0.list,Sigma0.list)
 lambda <- list()
-opt=sqrt(log(p-1))/sqrt(nrow(whole.data$data)*K0)
 opt2=sqrt(log((p-1)*K0))/sqrt(nrow(whole.data$data)*K0)
-lambda$lambda.similar=seq(0.2*opt,0.01*opt,length.out=10)
-lambda$lambda.lasso=seq(0.2*opt2,0.18*opt2,length.out=3)
-res<-MultiNetpath(whole.data$data,K0,lambda$lambda.lasso,lambda$lambda.similar,trace.inter= FALSE)
+lambda$gamma=3
+lambda$lambda_vec=seq(1*opt2,0.8*opt2,length.out=3)
+res<-MultiNetpath(whole.data$data,K0,lambda$lambda_vec,lambda$gamma,trace.inter= FALSE,numthreads=1)
 }

@@ -7,18 +7,18 @@
 MultiNet(
   data,
   K,
-  lambda.lasso,
-  lambda.similar,
-  eps = 0.001,
-  niter = 100,
+  lambda_mcp,
+  gamma = 3,
+  eps = 0.05,
+  niter = 20,
   initialization = "K-means",
   initialize,
   beta = NULL,
   traces = FALSE,
-  tau.theta = 0.001,
   refit = TRUE,
   n.start = NULL,
-  re = 1
+  re = 1,
+  numthreads = 1
 )
 }
 \arguments{
@@ -26,9 +26,9 @@ MultiNet(
 
 \item{K}{Number of clusters.}
 
-\item{lambda.lasso}{Penalty parameter for lasso term.}
+\item{lambda_mcp}{A non-negative tuning parameters for the composite MCP.}
 
-\item{lambda.similar}{Penalty parameter for group item.}
+\item{gamma}{A non-negative regularization parameter for the composite MCP. Default is 3.}
 
 \item{eps}{Tolerance for the EM algorithm. The default value is 1e-3.}
 
@@ -42,13 +42,13 @@ MultiNet(
 
 \item{traces}{Whether to trace intermediate results.}
 
-\item{tau.theta}{Threshold parameter for precision matrix.}
-
 \item{refit}{Whether to perform the refit process after the EM algorithm converges.}
 
 \item{n.start}{The parameter in k-means initialization, indicating how many random sets should be selected.}
 
 \item{re}{The seed used in the initialization step.}
+
+\item{numthreads}{Number of threads to use.}
 }
 \value{
 a list with entries
@@ -86,12 +86,11 @@ sigma03 <- solve(Theta03)
 Mu0.list <- list(mu01,mu02,mu03)
 Sigma0.list <- list(sigma01,sigma02,sigma03)
 Theta0.list <- list(Theta01,Theta02,Theta03)
-set.seed(1)
+set.seed(123)
 whole.data <- generate.data(N,Mu0.list,Theta0.list,Sigma0.list)
 lambda <- list()
-opt=sqrt(log(p-1))/sqrt(nrow(whole.data$data)*K0)
 opt2=sqrt(log((p-1)*K0))/sqrt(nrow(whole.data$data)*K0)
-lambda$lambda.similar=0.05*opt
-lambda$lambda.lasso=0.1*opt2
-res<-MultiNet(whole.data$data,K0,lambda$lambda.lasso,lambda$lambda.similar)
+lambda$gamma=3
+lambda$lambda_mcp=opt2
+res<-MultiNet(whole.data$data,K0,lambda$lambda_mcp,lambda$gamma,numthreads=1)
 }

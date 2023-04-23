@@ -8,9 +8,8 @@ Description: This package is created for the practical application of our work '
 License: GPL-2
 Encoding: UTF-8
 Imports:
-    igraph, glasso, MASS, stats, Matrix, Rcpp
-LinkingTo: 	RcppEigen, Rcpp
-RoxygenNote: 7.2.1
+    igraph, glasso, MASS, stats, Matrix, grpreg, doParallel, foreach, parallel
+RoxygenNote: 7.2.3
 Suggests: 
     knitr,
     rmarkdown 
