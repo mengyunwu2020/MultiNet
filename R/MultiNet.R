@@ -58,7 +58,7 @@
 #' Mu0.list <- list(mu01,mu02,mu03)
 #' Sigma0.list <- list(sigma01,sigma02,sigma03)
 #' Theta0.list <- list(Theta01,Theta02,Theta03)
-#' set.seed(123)
+#' set.seed(1)
 #' whole.data <- generate.data(N,Mu0.list,Theta0.list,Sigma0.list)
 #' lambda <- list()
 #' opt2=sqrt(log((p-1)*K0))/sqrt(nrow(whole.data$data)*K0)
