@@ -38,6 +38,7 @@
 #' @export
 #'
 #' @examples
+#' set.seed(1)
 #' n <- 200              # The sample size of each subgroup
 #' p <- 100              # The dimension of the precision matrix
 #' K0 <- 3
@@ -192,7 +193,8 @@ MultiNet =function(data, K,lambda_mcp,gamma=3,
   }
 
 
-
+  cl <- makeCluster(numthreads)
+  registerDoParallel(cl)
   while(t < niter)
   {
     prob.old = prob
@@ -256,6 +258,10 @@ MultiNet =function(data, K,lambda_mcp,gamma=3,
 
 
     coef.m=array(0,dim=c(p,p,K))
+
+
+ 
+
     for(i in 1:p){
       tmp_ind=setdiff(1:p,i)
       thresbeta=as.numeric(noder[1:(K*(p-1)),i])
@@ -283,7 +289,7 @@ MultiNet =function(data, K,lambda_mcp,gamma=3,
 
         Theta[i,i,kk] =stand_sigma[kk,i]^2
 
-
+        mu[kk,i]=(inverse_intercept[kk,i]+sum(thresbeta[((p-1)*(kk-1)+1):((p-1)*kk)]*mu[kk,-i]))/stand_sigma[kk,i]
 
 
       }
@@ -304,10 +310,20 @@ MultiNet =function(data, K,lambda_mcp,gamma=3,
       Theta[,,kk]=(Theta[,,kk] + t(Theta[,,kk]))/2
       A.hat[,,kk]=(abs(Theta[,,kk])>0)*1
       diag(A.hat[,,kk])=0
+    } 
+
+    for(kk in 1:K){
+      det_vec[kk]=det(Theta[,,kk])
+      while(det_vec[kk]<1e-4)
+      {
+         
+        Theta[,,kk]=Theta[,,kk]+diag(0.01,p,p)
+        det_vec[kk]=det(Theta[,,kk])
+      }
+      
+      
+      if(is.infinite(det_vec[kk])) det_vec[kk]=2^1023
     }
-    mu<-t(L.mat)%*%data/colSums(L.mat)
-
-
 
 
 
@@ -322,6 +338,7 @@ MultiNet =function(data, K,lambda_mcp,gamma=3,
       break;
     }
   }
+  stopCluster(cl)
   if(refit){
     restmp<-refitGMM(data,Theta,mu,L.mat,A.hat)
     Theta=restmp$Theta
