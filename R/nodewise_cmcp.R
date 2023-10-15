@@ -17,9 +17,7 @@ nodewise_cmcp<-function(data, K, nrow,p,stand_sigma,sqrt_L,index,lambdas,gamma,i
       weightX[,l]=sqrt_L[,k]*data[,j]
       l=l+1
     }
-  }
-  cl <- makeCluster(numthreads)
-  registerDoParallel(cl)
+  } 
 
 
   a=foreach(i=1:p,.packages = c('grpreg'),.inorder=TRUE,.combine = cbind,  .export = c("CMCP","K","p","weightX","nrow","stand_sigma","sqrt_L","index","lambdas","gamma","inverse_intercept","nK"))%dopar% {
@@ -43,8 +41,7 @@ nodewise_cmcp<-function(data, K, nrow,p,stand_sigma,sqrt_L,index,lambdas,gamma,i
     temp= XX%*%matrix(out,ncol = 1)
     res=c(out,as.vector(temp))
     res
-  }
-  stopCluster(cl)
+  } 
   return(a)
 }
 
