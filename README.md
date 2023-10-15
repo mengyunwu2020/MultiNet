@@ -2,7 +2,7 @@
 Estimation of multiple networks with common structures in heterogeneous subgroups
 
 # Maintainer
-qin.xing@163.sufe.edu.cn
+qinxingwork@163.com
  
 # Usage
 
