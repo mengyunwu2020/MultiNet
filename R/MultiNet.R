@@ -1,6 +1,4 @@
 #' Estimation of multiple networks with common structures in heterogeneous subgroups (MultiNet).
-#'@details
-#' This function estimates multiple networks based on SQRT-sparse group lasso.
 #'
 #' @param data An n by p data matrix.
 #' @param K Number of clusters.
@@ -260,7 +258,7 @@ MultiNet =function(data, K,lambda_mcp,gamma=3,
     coef.m=array(0,dim=c(p,p,K))
 
 
- 
+
 
     for(i in 1:p){
       tmp_ind=setdiff(1:p,i)
@@ -310,18 +308,18 @@ MultiNet =function(data, K,lambda_mcp,gamma=3,
       Theta[,,kk]=(Theta[,,kk] + t(Theta[,,kk]))/2
       A.hat[,,kk]=(abs(Theta[,,kk])>0)*1
       diag(A.hat[,,kk])=0
-    } 
+    }
 
     for(kk in 1:K){
       det_vec[kk]=det(Theta[,,kk])
       while(det_vec[kk]<1e-4)
       {
-         
+
         Theta[,,kk]=Theta[,,kk]+diag(0.01,p,p)
         det_vec[kk]=det(Theta[,,kk])
       }
-      
-      
+
+
       if(is.infinite(det_vec[kk])) det_vec[kk]=2^1023
     }
 

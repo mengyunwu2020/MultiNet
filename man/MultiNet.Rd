@@ -62,9 +62,6 @@ a list with entries
 \description{
 Estimation of multiple networks with common structures in heterogeneous subgroups (MultiNet).
 }
-\details{
-This function estimates multiple networks based on SQRT-sparse group lasso.
-}
 \examples{
 set.seed(1)
 n <- 200              # The sample size of each subgroup
